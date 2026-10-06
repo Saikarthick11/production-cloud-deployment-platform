@@ -1,5 +1,5 @@
-# Start with Python on a small Debian Linux image.
-FROM python:3.14-slim
+# Start with Python on a small Alpine Linux image.
+FROM python:3.14-alpine
 
 # Avoid bytecode files and send Python output straight to container logs.
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -9,10 +9,14 @@ WORKDIR /app
 
 # Copy dependencies first so code edits can reuse this installation layer.
 COPY requirements.txt .
-RUN python -m pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --no-cache-dir -r requirements.txt \
+    && python -m pip uninstall -y pip \
+    && rm -rf /usr/local/lib/python3.14/ensurepip
+
+# pip and ensurepip are installation tools; the running app does not need them.
 
 # Run the service as an ordinary user rather than root.
-RUN useradd --create-home --uid 10001 appuser
+RUN adduser -D -u 10001 appuser
 COPY app/ ./app/
 USER appuser
 

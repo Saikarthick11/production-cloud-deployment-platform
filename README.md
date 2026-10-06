@@ -230,12 +230,12 @@ docker version
 
 | Instruction | What it does here |
 | --- | --- |
-| `FROM python:3.14-slim` | Starts with Python 3.14 on a minimal Debian base |
+| `FROM python:3.14-alpine` | Starts with Python 3.14 on a minimal Alpine base |
 | `ENV ...` | Disables bytecode writes and enables immediate Python log output |
 | `WORKDIR /app` | Sets the working folder inside the image |
 | `COPY requirements.txt .` | Copies the runtime dependency list first |
 | `RUN python -m pip install ...` | Installs dependencies while building the image |
-| `RUN useradd ...` | Creates a Linux user with ID 10001 |
+| `RUN adduser ...` | Creates a Linux user with ID 10001 |
 | `COPY app/ ./app/` | Copies your application source into the image |
 | `USER appuser` | Runs the remaining container commands as that ordinary user |
 | `EXPOSE 8000` | Documents which port the app listens on |

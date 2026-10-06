@@ -12,7 +12,7 @@ It runs on GitHub-hosted machines; your laptop and Docker Desktop can be off.
 4. Ruff checks common Python mistakes, import order, and formatting. pytest runs
    the API tests; pip checks dependency compatibility.
 5. Docker builds the image and labels it with its source repository and commit.
-6. Trivy scans OS and Python packages for known vulnerabilities. Any HIGH or
+6. A running-container check calls all three endpoints. Trivy then scans OS and Python packages for known vulnerabilities. Any HIGH or
    CRITICAL result blocks publishing, even when no fix is available. Scanner
    download or execution failures also fail the job. Passing a scan is not proof
    that an image has no vulnerabilities.
@@ -69,3 +69,10 @@ for image publication, but repository rules are a separate setting.
 
 References: [GitHub image publishing](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images),
 [Trivy container scanning](https://trivy.dev/docs/latest/target/container_image/).
+
+The initial Debian-based image was blocked by the scan. The runtime now uses
+Alpine and removes pip and ensurepip after dependency installation, since they
+are not needed to serve requests. Package metadata remains available to the
+scanner. Alpine uses musl rather than glibc, so future native dependencies may
+need compatible wheels or build tools. Rebuild the image to install new packages;
+do not install them into a running container.
