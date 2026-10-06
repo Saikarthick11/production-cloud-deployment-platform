@@ -3,11 +3,14 @@
 A small FastAPI service that you can run, test, and explain locally. This is the
 application foundation for a future cloud project, not a production platform yet.
 Day 1 builds the API; the following phases package it with Docker and run it in
-local Kubernetes. Terraform and CI/CD are later phases.
+local Kubernetes. GitHub Actions now tests, scans, and publishes images; deployment
+automation and Terraform are later phases.
 
 Already finished Docker? Continue with [the Kubernetes walkthrough](k8s/README.md).
 
 Already finished Kubernetes? Continue with [the Helm walkthrough](helm/cloud-platform/README.md).
+
+Already finished Helm? Continue with [the CI walkthrough](docs/ci.md).
 
 Already ran the app locally? Continue with [the Docker walkthrough](#6-package-and-run-with-docker).
 
