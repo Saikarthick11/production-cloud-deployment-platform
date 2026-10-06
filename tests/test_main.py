@@ -26,9 +26,7 @@ def root_count(client: TestClient) -> float:
 def test_root(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {
-        "message": "Welcome to the Production Cloud Deployment Platform"
-    }
+    assert response.json() == {"message": "Welcome to the Production Cloud Deployment Platform"}
 
 
 def test_health(client):
