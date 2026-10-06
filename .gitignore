@@ -1,0 +1,19 @@
+# Local Python environment and generated files
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+
+# Local tools and cluster access credentials
+.tools/
+.local/

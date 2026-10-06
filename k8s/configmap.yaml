@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-platform-config
+  namespace: cloud-platform
+data:
+  UVICORN_LOG_LEVEL: info

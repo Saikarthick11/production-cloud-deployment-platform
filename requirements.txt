@@ -1,0 +1,4 @@
+# Libraries needed to run the app.
+fastapi==0.142.2
+uvicorn==0.54.0
+prometheus-client==0.26.0

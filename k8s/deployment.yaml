@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-platform
+  namespace: cloud-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-platform
+  template:
+    metadata:
+      labels:
+        app: cloud-platform
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: api
+          image: cloud-platform:k8s-v1
+          # The image is loaded into kind locally, not fetched from a registry.
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: cloud-platform-config
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: demo-secret
+              mountPath: /var/run/secrets/cloud-platform
+              readOnly: true
+      volumes:
+        - name: demo-secret
+          secret:
+            secretName: cloud-platform-demo
+            defaultMode: 0440

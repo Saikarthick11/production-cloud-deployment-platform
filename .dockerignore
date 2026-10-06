@@ -1,0 +1,13 @@
+# Only send the runtime source and dependency list to the build.
+**
+!Dockerfile
+!.dockerignore
+!requirements.txt
+!app/
+!app/**
+
+# Exclude generated files or local secrets even when inside app/.
+**/__pycache__/
+**/*.py[cod]
+**/.env
+**/.env.*
