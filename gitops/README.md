@@ -36,10 +36,19 @@ mkdir -p .local
 curl -fL https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.4/manifests/install.yaml -o .local/argocd-install.yaml
 kubectl --kubeconfig .local/kubeconfig create namespace argocd --dry-run=client -o yaml | kubectl --kubeconfig .local/kubeconfig apply -f -
 kubectl --kubeconfig .local/kubeconfig apply --server-side -n argocd -f .local/argocd-install.yaml
+docker pull public.ecr.aws/docker/library/redis:8.2.3-alpine
+docker save --platform linux/arm64 public.ecr.aws/docker/library/redis:8.2.3-alpine -o .local/redis-arm64.tar
+.tools/kind load image-archive .local/redis-arm64.tar --name cloud-platform
+kubectl --kubeconfig .local/kubeconfig -n argocd patch deployment argocd-redis --patch-file gitops/argocd-redis-patch.yaml
 kubectl --kubeconfig .local/kubeconfig -n argocd rollout status deployment/argocd-repo-server --timeout=300s
 kubectl --kubeconfig .local/kubeconfig -n argocd rollout status statefulset/argocd-application-controller --timeout=300s
 kubectl --kubeconfig .local/kubeconfig apply -f gitops/namespace.yaml -f gitops/project.yaml -f gitops/application.yaml
 ```
+
+The Redis preload and pull-policy patch work around a stalled ECR pull observed
+on the local cluster. The export selects ARM64 for this Mac; use `linux/amd64`
+on an Intel machine. `argocd-redis-patch.yaml` is a bootstrap patch, not an app
+manifest.
 
 The installation is pinned to Argo CD v3.5.4. Its manifests stay in ignored
 `.local/`. The Application needs these project files pushed to GitHub, because

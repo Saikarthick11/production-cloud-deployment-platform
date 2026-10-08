@@ -1,0 +1,7 @@
+# Local kind setup: reuse the preloaded image instead of contacting ECR on startup.
+spec:
+  template:
+    spec:
+      containers:
+        - name: redis
+          imagePullPolicy: IfNotPresent

@@ -5,4 +5,4 @@ image:
   tag: gitops-v1
   pullPolicy: IfNotPresent
 replicaCount: 1
-logLevel: info
+logLevel: debug
