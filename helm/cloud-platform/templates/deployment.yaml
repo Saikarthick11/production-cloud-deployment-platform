@@ -24,7 +24,7 @@ spec:
       containers:
         - name: api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          # The image is loaded into kind locally, not fetched from a registry.
+          # Use the selected local or registry image.
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

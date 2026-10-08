@@ -4,11 +4,10 @@ Argo CD watches the Helm chart and `gitops/values-local.yaml` on GitHub's `main`
 branch, renders Kubernetes objects, and reconciles them with the local cluster.
 Git is the desired state; direct cluster edits are corrected by self-healing.
 
-This lesson uses a local ARM-compatible image built from the updated Alpine
-Dockerfile. It is not the AMD64 image published by CI. New CI images are not
-automatically promoted: registry access, compatible image publishing, and image
-tag promotion remain separate work. Configuration changes in Git do deploy
-automatically. Keep this distinction clear in demonstrations.
+CI now builds and scans AMD64 and ARM64 images, publishes a combined GHCR tag,
+then commits that image reference to `gitops/values-local.yaml`. Argo observes the
+commit and rolls out the registry image. Kubernetes selects its native architecture.
+See [image delivery](../docs/image-delivery.md) for the complete flow.
 
 ## Files
 
@@ -18,7 +17,7 @@ automatically. Keep this distinction clear in demonstrations.
   cluster permissions; this is a local learning setup.
 - `application.yaml`: connects the Git source and chart to the cluster, enabling
   automatic sync, pruning, and self-healing.
-- `values-local.yaml`: selects the local image, replica count, and log level.
+- `values-local.yaml`: selects the promoted registry image, replica count, and log level.
 
 Argo uses Helm to render templates, but manages the resources itself. This app
 will not appear as a release in `helm list`; use Argo's UI or Application status.
@@ -30,8 +29,6 @@ examples remain in their own namespaces.
 Run from the project root with Docker Desktop and the kind cluster running:
 
 ```bash
-docker build -t cloud-platform:gitops-v1 .
-.tools/kind load docker-image cloud-platform:gitops-v1 --name cloud-platform
 mkdir -p .local
 curl -fL https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.4/manifests/install.yaml -o .local/argocd-install.yaml
 kubectl --kubeconfig .local/kubeconfig create namespace argocd --dry-run=client -o yaml | kubectl --kubeconfig .local/kubeconfig apply -f -
@@ -135,11 +132,10 @@ Argo and all earlier local examples too.
 
 ## Troubleshooting
 
-- `ImagePullBackOff`: build/load `cloud-platform:gitops-v1` into this kind cluster.
+- `ImagePullBackOff`: verify the promoted GHCR tag exists and allows anonymous pulls.
 - `ComparisonError`: inspect `kubectl --kubeconfig .local/kubeconfig -n argocd describe application cloud-platform-gitops`.
 - `OutOfSync`: check sync operation errors, Git availability, and Argo Pod health.
 - Git changed but nothing deployed: check the pushed branch and values path.
-- Do not reuse the AMD64 GHCR tag on this ARM cluster without arranging compatible
-  image execution and registry access.
+- Older CI tags are AMD64-only; use a tag from the new multi-platform workflow.
 
 Reference: [Argo CD getting started](https://argo-cd.readthedocs.io/en/stable/getting_started/).

@@ -31,14 +31,11 @@ and the Trivy version deliberately when upgrading tools.
 ghcr.io/saikarthick11/production-cloud-deployment-platform:sha-<full-commit-sha>
 ```
 
-The full tag is printed in the publish job summary. This phase builds Linux AMD64
-on the GitHub runner. Local Apple Silicon images from earlier phases are ARM64;
-the registry image needs emulation there. Multi-platform publishing is a later
-improvement. New GHCR packages may be private even for public repositories; package
-visibility and reader access are separate from successful publication.
-
-This workflow publishes images but does not deploy them to Kubernetes. Your local
-Helm release remains on its existing image. Deployment automation comes later.
+The full tag is printed in the publish job summary. Both AMD64 and ARM64 builds
+run tests, container checks, and Trivy independently. Only when both pass does
+publishing combine their exact scanned images under one multi-platform tag.
+A final promotion job commits that tag to Git, and Argo deploys it. See
+[image delivery](image-delivery.md) for permissions, race protection, and recovery.
 
 ## Run checks before pushing
 

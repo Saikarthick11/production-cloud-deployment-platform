@@ -16,7 +16,15 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -61,7 +69,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: scanned-image
+          name: scanned-image-${{ matrix.arch }}
           path: /tmp/image.tar
           retention-days: 1
           compression-level: 0
@@ -69,7 +77,7 @@ jobs:
   publish:
     needs: verify
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
@@ -78,18 +86,51 @@ jobs:
     steps:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: scanned-image
-          path: /tmp
+          pattern: scanned-image-*
+          path: /tmp/images
       - name: Publish the exact scanned image
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
-          docker load -i /tmp/image.tar
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
-          docker tag "cloud-platform:$GITHUB_SHA" "$IMAGE:sha-$GITHUB_SHA"
-          docker push "$IMAGE:sha-$GITHUB_SHA"
+          for ARCH in amd64 arm64; do
+            docker load -i "/tmp/images/scanned-image-$ARCH/image.tar"
+            docker tag "cloud-platform:$GITHUB_SHA" "$IMAGE:sha-$GITHUB_SHA-$ARCH"
+            docker push "$IMAGE:sha-$GITHUB_SHA-$ARCH"
+          done
+          docker manifest create "$IMAGE:sha-$GITHUB_SHA" "$IMAGE:sha-$GITHUB_SHA-amd64" "$IMAGE:sha-$GITHUB_SHA-arm64"
+          docker manifest push "$IMAGE:sha-$GITHUB_SHA"
           echo "Published: $IMAGE:sha-$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
       - name: Log out of registry
         if: always()
         run: docker logout ghcr.io
+
+  promote:
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Select the passing image in Git
+        env:
+          IMAGE_REPOSITORY: ghcr.io/${{ github.repository }}
+        run: |
+          # Do not promote an older build over newer source changes.
+          if [ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+            echo "Newer source exists; skipping this promotion." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          python3 scripts/promote_image.py "$IMAGE_REPOSITORY" "sha-$GITHUB_SHA"
+          git config user.name Saikarthick11
+          git config user.email 85236681+Saikarthick11@users.noreply.github.com
+          git add gitops/values-local.yaml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Deploy scanned image sha-$GITHUB_SHA"
+          # A concurrent push causes a safe rejection; never force-push.
+          git push origin HEAD:main
