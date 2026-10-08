@@ -12,6 +12,8 @@ Already finished Kubernetes? Continue with [the Helm walkthrough](helm/cloud-pla
 
 Already finished Helm? Continue with [the CI walkthrough](docs/ci.md).
 
+Already finished CI? Continue with [the local GitOps walkthrough](gitops/README.md).
+
 Already ran the app locally? Continue with [the Docker walkthrough](#6-package-and-run-with-docker).
 
 ## What you built

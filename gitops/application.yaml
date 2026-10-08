@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloud-platform-gitops
+  namespace: argocd
+spec:
+  project: cloud-platform
+  source:
+    repoURL: https://github.com/Saikarthick11/production-cloud-deployment-platform.git
+    targetRevision: main
+    path: helm/cloud-platform
+    helm:
+      releaseName: cloud-platform-gitops
+      valueFiles:
+        - ../../gitops/values-local.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloud-platform-gitops
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false

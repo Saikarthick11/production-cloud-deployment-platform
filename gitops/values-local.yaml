@@ -1,0 +1,8 @@
+# This ARM-compatible image is built locally and loaded into the local kind cluster.
+# GHCR integration requires a compatible published image and registry access.
+image:
+  repository: cloud-platform
+  tag: gitops-v1
+  pullPolicy: IfNotPresent
+replicaCount: 1
+logLevel: info
