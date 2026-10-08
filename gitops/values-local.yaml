@@ -1,7 +1,7 @@
 # CI promotes this image only after both architecture builds pass.
 image:
-  repository: cloud-platform
-  tag: gitops-v1
+  repository: ghcr.io/saikarthick11/production-cloud-deployment-platform
+  tag: sha-b8dcf0d17a83d8f0d23381f1a229a4e307431fdc
   pullPolicy: IfNotPresent
 replicaCount: 1
 logLevel: info
