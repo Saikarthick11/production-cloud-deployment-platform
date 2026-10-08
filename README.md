@@ -3,8 +3,8 @@
 A small FastAPI service that you can run, test, and explain locally. This is the
 application foundation for a future cloud project, not a production platform yet.
 Day 1 builds the API; the following phases package it with Docker and run it in
-local Kubernetes. GitHub Actions now tests, scans, and publishes images; deployment
-automation and Terraform are later phases.
+local Kubernetes. GitHub Actions tests, scans, and publishes multi-platform images; Argo CD deploys
+automatically promoted image references from Git. Terraform is a later phase.
 
 Already finished Docker? Continue with [the Kubernetes walkthrough](k8s/README.md).
 
@@ -159,7 +159,7 @@ python -m pip check
 ```
 
 `python -m pytest` discovers and runs functions whose names start with `test_`.
-`-q` makes its output shorter. Expect **6 passed**. `pip check` checks installed
+`-q` makes its output shorter. Expect **9 passed** (six API tests and three image-promotion tests). `pip check` checks installed
 dependencies for missing packages and incompatible version requirements.
 The server can be stopped: tests run their own in-process app.
 

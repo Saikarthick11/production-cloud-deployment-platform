@@ -10,14 +10,15 @@ It runs on GitHub-hosted machines; your laptop and Docker Desktop can be off.
 2. Setup Python selects Python 3.14 and caches dependency downloads.
 3. pip installs `requirements-dev.txt`, including Ruff and pytest.
 4. Ruff checks common Python mistakes, import order, and formatting. pytest runs
-   the API tests; pip checks dependency compatibility.
+   the API and image-promotion tests; pip checks dependency compatibility.
 5. Docker builds the image and labels it with its source repository and commit.
 6. A running-container check calls all three endpoints. Trivy then scans OS and Python packages for known vulnerabilities. Any HIGH or
    CRITICAL result blocks publishing, even when no fix is available. Scanner
    download or execution failures also fail the job. Passing a scan is not proof
    that an image has no vulnerabilities.
 7. On `main`, the passing image is saved as an artifact retained for one day.
-8. The publish job loads that same image, logs into GHCR, and pushes a commit tag.
+8. The publish job loads both scanned images and pushes a combined commit tag.
+9. The promotion job commits that tag to Git for Argo to deploy.
 
 `needs: verify` makes publishing depend on successful checks. Only the publish
 job has `packages: write`; pull requests never enter it. GitHub supplies the
