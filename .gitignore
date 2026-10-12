@@ -17,3 +17,13 @@ htmlcov/
 # Local tools and cluster access credentials
 .tools/
 .local/
+
+# Terraform downloads, state, real inputs, and saved plans stay local.
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+crash.log
+crash.*.log

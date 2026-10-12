@@ -14,6 +14,8 @@ Already finished Helm? Continue with [the CI walkthrough](docs/ci.md).
 
 Already finished CI? Continue with [the local GitOps walkthrough](gitops/README.md).
 
+For local metrics and dashboards, see [the monitoring walkthrough](monitoring/README.md).
+
 Already ran the app locally? Continue with [the Docker walkthrough](#6-package-and-run-with-docker).
 
 ## What you built
@@ -347,3 +349,17 @@ container's port and verified the existing health and metrics endpoints."
 - [FastAPI testing guide](https://fastapi.tiangolo.com/tutorial/testing/)
 - [Prometheus Python counters](https://prometheus.github.io/client_python/instrumenting/counter/)
 - [Docker build best practices](https://docs.docker.com/build/building/best-practices/)
+
+## GCP infrastructure configuration
+
+The [Terraform lesson](terraform/README.md) describes the future GCP network,
+GKE cluster, node permissions, and Artifact Registry. It includes local validation
+and mock plan tests. No cloud resources have been provisioned; GHCR and the local
+Kubernetes deployment remain the active setup.
+
+## Reliability and autoscaling practice
+
+The [reliability lesson](reliability/README.md) installs an isolated local practice
+release to demonstrate CPU autoscaling, pod replacement, and recovery from a bad
+image rollout. The Helm chart supports optional HPA scaling; the existing GitOps
+application keeps its current fixed replica setting until a later reviewed push.

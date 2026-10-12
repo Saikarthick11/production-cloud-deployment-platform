@@ -1,0 +1,6 @@
+# Isolated local practice release; GitOps continues using its existing settings.
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 60

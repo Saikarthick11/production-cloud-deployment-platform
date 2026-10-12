@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: reliability-load
+  namespace: cloud-platform-reliability
+spec:
+  activeDeadlineSeconds: 240
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: traffic
+          image: ghcr.io/saikarthick11/production-cloud-deployment-platform:sha-b8dcf0d17a83d8f0d23381f1a229a4e307431fdc
+          command: [python, /practice/load.py]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: script
+              mountPath: /practice
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: reliability-load

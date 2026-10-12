@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Upstream v0.9.0 release manifest; supports our Kubernetes 1.34 kind node.
+resources:
+  - components.yaml
+patches:
+  - target:
+      kind: Deployment
+      name: metrics-server
+      namespace: kube-system
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kubelet-insecure-tls
+# Local kind only: its kubelet certificate is not trusted by Metrics Server.
+# Never reuse this certificate-validation exception on a cloud cluster.

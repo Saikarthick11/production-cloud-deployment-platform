@@ -15,3 +15,10 @@ resources:
   limits:
     cpu: 500m
     memory: 256Mi
+
+# HPA owns the replica count when enabled. Requires Metrics Server.
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 60

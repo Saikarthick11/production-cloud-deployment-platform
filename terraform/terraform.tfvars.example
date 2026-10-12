@@ -1,0 +1,6 @@
+# Replace both examples before a real, authenticated plan.
+project_id = "your-existing-project-id"
+region     = "us-central1"
+zone       = "us-central1-a"
+# Documentation-only address: replace with your current public IPv4 address /32.
+admin_cidr = "203.0.113.10/32"

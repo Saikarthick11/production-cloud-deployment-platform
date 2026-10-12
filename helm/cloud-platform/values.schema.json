@@ -7,7 +7,8 @@
     "service",
     "logLevel",
     "demoToken",
-    "resources"
+    "resources",
+    "autoscaling"
   ],
   "properties": {
     "replicaCount": {
@@ -69,6 +70,33 @@
     },
     "resources": {
       "type": "object"
+    },
+    "autoscaling": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercentage"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "minReplicas": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxReplicas": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetCPUUtilizationPercentage": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
     }
   }
 }
