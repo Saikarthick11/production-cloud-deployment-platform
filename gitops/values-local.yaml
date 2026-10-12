@@ -1,7 +1,7 @@
 # CI promotes this image only after both architecture builds pass.
 image:
   repository: ghcr.io/saikarthick11/production-cloud-deployment-platform
-  tag: sha-b8dcf0d17a83d8f0d23381f1a229a4e307431fdc
+  tag: sha-d9fad7353d682a07f560e21cc73f2336960f509d
   pullPolicy: IfNotPresent
 replicaCount: 1
 logLevel: info
