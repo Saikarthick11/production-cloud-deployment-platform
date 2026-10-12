@@ -2,7 +2,7 @@
 
 [Back to the project](../README.md)
 
-Terraform describes cloud resources in files. This folder is our plan for moving the platform to Google Cloud later. It has passed local checks, but it has not created anything in GCP.
+Terraform describes cloud resources in files. This folder defines the Google Cloud practice environment. It passed local checks and was used to create and test a one-node GKE cluster, which has since been deleted. See the [cloud guide](../gcp/README.md) for access and cleanup.
 
 ## Before you start
 
@@ -34,8 +34,8 @@ On another machine, install Terraform and replace `.tools/terraform` with
 `terraform`. The tests use fake provider responses, so they do not prove a real
 GCP project has the required permissions or quota.
 
-For now, stop at checking and planning. Creating the environment later requires
-a real project, credentials, and billing; running it will cost money.
+The cloud practice environment was deleted after successful testing. For a new
+installation, review the plan before applying it. Delete practice resources when finished.
 
 ## Step-by-step instructions
 

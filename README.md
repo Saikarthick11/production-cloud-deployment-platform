@@ -25,11 +25,18 @@ monitored. It is not a service used by real customers.
    change and updates the app in Kubernetes.
 6. **Watch it.** Prometheus collects measurements, and Grafana displays them.
 
-```text
-Code → GitHub Actions → GHCR → Argo CD → Kubernetes
-                                           ↓
-                                   Prometheus + Grafana
+```mermaid
+flowchart LR
+    Code[Code push] --> CI[Tests, build and scan]
+    CI --> GHCR[GHCR image]
+    GHCR --> Git[Image tag saved in Git]
+    Git --> Argo[Argo CD]
+    Argo --> App[App in local Kubernetes]
+    App --> Prometheus[Prometheus]
+    Prometheus --> Grafana[Grafana]
 ```
+
+[See the full architecture](docs/architecture.md), including the separate GCP test.
 
 Argo CD also follows deployment settings pushed to Git. Those settings can sync
 before CI finishes; the image promotion step is what waits for a passing build.
@@ -43,11 +50,23 @@ before CI finishes; the image promotion step is what waits for a passing build.
 | Kubernetes and Argo CD | Deploy the app in a local kind cluster |
 | Monitoring | Local Prometheus and Grafana dashboard |
 | Reliability practice | Tested scaling from 1 to 3 pods, pod replacement, and rollback |
-| GCP Terraform | Configuration validated; no cloud resources created |
+| GCP Terraform | One-node GKE deployment tested successfully, then deleted |
 
-Kubernetes runs on my laptop, so Docker Desktop needs to be running. GitHub
-Actions and GHCR run on GitHub. Autoscaling is enabled in a separate practice
+The original Kubernetes environment runs on my laptop, so Docker Desktop needs
+to be running. A separate [GKE practice deployment](gcp/README.md) was tested on
+Google Cloud and then deleted. GitHub Actions and GHCR run on GitHub. Autoscaling is enabled in a separate practice
 app; the main GitOps app still uses a fixed replica count.
+
+## Tested on Google Cloud
+
+I used Terraform to create a one-node GKE cluster, deployed the same app with
+Helm, and verified all three endpoints. I then deleted the practice resources
+and checked for leftovers.
+
+![Cloud workload showing status OK and 1/1 pods ready](docs/screenshots/gke-workload.png)
+
+[View both screenshots and the test results](gcp/RESULTS.md). The cloud test was
+completed on October 12, 2026; the GCP environment is no longer running.
 
 ## Try the app first
 
@@ -95,7 +114,8 @@ You do not need to run every guide just to try the app.
 | Deploy changes from Git | [Argo CD](gitops/README.md) |
 | Open the dashboard | [Monitoring](monitoring/README.md) |
 | Try scaling and recovery | [Reliability](reliability/README.md) |
-| Explore the future GCP setup | [Terraform](terraform/README.md) |
+| Understand the GCP infrastructure | [Terraform](terraform/README.md) |
+| Try or delete the cloud practice app | [GCP guide](gcp/README.md) |
 
 ## What I learned
 

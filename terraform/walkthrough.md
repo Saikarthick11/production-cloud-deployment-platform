@@ -1,13 +1,14 @@
-# Terraform: describe the future GCP environment
+# Terraform: describe the GCP environment
 
 [Back to the short guide](README.md)
 
-This phase adds infrastructure as code. It does **not** create cloud resources,
-move images from GHCR, or deploy our application to GKE. Our running local kind
+This guide begins with checks that do not create resources. The configuration
+was later used for a real GCP test and then torn down; see the
+[cloud results](../gcp/RESULTS.md). Images still come from GHCR. The local kind
 cluster and GitHub workflow are separate from this configuration.
 
 Terraform compares a desired configuration with recorded infrastructure state.
-`plan` previews changes; `apply` makes them. For this phase we stop at validation
+`plan` previews changes; `apply` makes them. Start with validation
 and mocked plans. A real GCP plan needs your project and credentials.
 
 ## What the configuration describes
@@ -140,8 +141,9 @@ locking instead of relying on one laptop's local state.
 “I wrote Terraform configuration for a GCP deployment of my platform: networking,
 a private-node GKE cluster, node permissions, and an Artifact Registry repository.
 I validated the configuration and used mocked plans to test important settings.
-I have not provisioned the cloud environment yet; my working deployment runs on
-local Kubernetes and pulls images from GHCR.”
+I also provisioned a GKE practice environment, deployed the app with Helm,
+verified its endpoints, and removed the resources after testing. My GitOps and
+monitoring setup runs locally; both deployments used images from GHCR.”
 
 ## References
 
